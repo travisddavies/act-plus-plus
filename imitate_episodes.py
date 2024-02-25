@@ -145,8 +145,9 @@ def main(args):
     config_path = os.path.join(ckpt_dir, 'config.pkl')
     expr_name = ckpt_dir.split('/')[-1]
     if not is_eval:
-        wandb.init(project="mobile-aloha2", reinit=True, entity="mobile-aloha2", name=expr_name)
-        wandb.config.update(config)
+        wandb.init(project='mobile-aloha2', config=config, reinit=True,
+                   name=expr_name)
+#        wandb.config.update(config)
     with open(config_path, 'wb') as f:
         pickle.dump(config, f)
     if is_eval:
@@ -221,7 +222,7 @@ def get_image(ts, camera_names, rand_crop_resize=False):
         resize_transform = transforms.Resize(original_size, antialias=True)
         curr_image = resize_transform(curr_image)
         curr_image = curr_image.unsqueeze(0)
-    
+
     return curr_image
 
 
@@ -280,7 +281,7 @@ def eval_bc(config, ckpt_name, save_episode=True, num_rollouts=50):
     #     actuator_stats_path  = os.path.join(actuator_network_dir, 'actuator_net_stats.pkl')
     #     with open(actuator_stats_path, 'rb') as f:
     #         actuator_stats = pickle.load(f)
-        
+
     #     actuator_unnorm = lambda x: x * actuator_stats['commanded_speed_std'] + actuator_stats['commanded_speed_std']
     #     actuator_norm = lambda x: (x - actuator_stats['observed_speed_mean']) / actuator_stats['observed_speed_mean']
     #     def collect_base_action(all_actions, norm_episode_all_base_actions):
@@ -349,7 +350,7 @@ def eval_bc(config, ckpt_name, save_episode=True, num_rollouts=50):
         with torch.inference_mode():
             time0 = time.time()
             DT = 1 / FPS
-            culmulated_delay = 0 
+            culmulated_delay = 0
             for t in range(max_timesteps):
                 time1 = time.time()
                 ### update onscreen render and wait for DT
@@ -556,7 +557,7 @@ def train_bc(train_dataloader, val_dataloader, config):
 
     min_val_loss = np.inf
     best_ckpt_info = None
-    
+
     train_dataloader = repeater(train_dataloader)
     for step in tqdm(range(num_steps+1)):
         # validation
@@ -579,14 +580,14 @@ def train_bc(train_dataloader, val_dataloader, config):
                     min_val_loss = epoch_val_loss
                     best_ckpt_info = (step, min_val_loss, deepcopy(policy.serialize()))
             for k in list(validation_summary.keys()):
-                validation_summary[f'val_{k}'] = validation_summary.pop(k)            
+                validation_summary[f'val_{k}'] = validation_summary.pop(k)
             wandb.log(validation_summary, step=step)
             print(f'Val loss:   {epoch_val_loss:.5f}')
             summary_string = ''
             for k, v in validation_summary.items():
                 summary_string += f'{k}: {v.item():.3f} '
             print(summary_string)
-                
+
         # evaluation
         if (step > 0) and (step % eval_every == 0):
             # first save then eval
@@ -662,5 +663,5 @@ if __name__ == '__main__':
     parser.add_argument('--vq_class', action='store', type=int, help='vq_class')
     parser.add_argument('--vq_dim', action='store', type=int, help='vq_dim')
     parser.add_argument('--no_encoder', action='store_true')
-    
+
     main(vars(parser.parse_args()))
