@@ -116,7 +116,7 @@ class DETRVAE(nn.Module):
                 encoder_output = self.encoder(encoder_input, pos=pos_embed, src_key_padding_mask=is_pad)
                 encoder_output = encoder_output[0] # take cls output only
                 latent_info = self.latent_proj(encoder_output)
-                
+
                 if self.vq:
                     logits = latent_info.reshape([*latent_info.shape[:-1], self.vq_class, self.vq_dim])
                     probs = torch.softmax(logits, dim=-1)
@@ -282,7 +282,7 @@ def build(args):
     if args.no_encoder:
         encoder = None
     else:
-        encoder = build_transformer(args)
+        encoder = build_encoder(args)
 
     model = DETRVAE(
         backbones,
