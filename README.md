@@ -45,6 +45,20 @@ You can find all scripted/human demo for simulated environments [here](https://d
 
 - also need to install https://github.com/ARISE-Initiative/robomimic/tree/r2d2 (note the r2d2 branch) for Diffusion Policy by `pip install -e .`
 
+### Troubleshooting
+In case you have errors with simulation with Mujoco, you can install the following packages:
+
+    conda activate aloha
+    conda install -c conda-forge glew
+    conda install -c conda-forge mesalib
+    conda install -c anaconda mesa-libgl-cos6-x86_64
+    conda install -c menpo glfw3
+
+Afterwards, run the following commands:
+
+    conda env config vars set MUJOCO_GL=egl PYOPENGL_PLATFORM=egl
+    conda deactivate && conda activate aloha
+
 ### Example Usages
 
 To set up a new terminal, run:
