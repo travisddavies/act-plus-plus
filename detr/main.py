@@ -63,11 +63,11 @@ def get_args_parser():
     parser.add_argument('--kl_weight', action='store', type=int, help='KL Weight', required=False)
     parser.add_argument('--chunk_size', action='store', type=int, help='chunk_size', required=False)
     parser.add_argument('--temporal_agg', action='store_true')
-    
+
     parser.add_argument('--use_vq', action='store_true')
     parser.add_argument('--vq_class', action='store', type=int, help='vq_class', required=False)
     parser.add_argument('--vq_dim', action='store', type=int, help='vq_dim', required=False)
-    parser.add_argument('--load_pretrain', action='store_true', default=False)
+    parser.add_argument('--load_pretrain', type=str)
     parser.add_argument('--action_dim', action='store', type=int, required=False)
     parser.add_argument('--eval_every', action='store', type=int, default=500, help='eval_every', required=False)
     parser.add_argument('--validate_every', action='store', type=int, default=500, help='validate_every', required=False)
@@ -79,7 +79,7 @@ def get_args_parser():
     parser.add_argument('--history_len', action='store', type=int)
     parser.add_argument('--future_len', action='store', type=int)
     parser.add_argument('--prediction_len', action='store', type=int)
-    
+
     return parser
 
 
