@@ -74,7 +74,8 @@ def capture_one_episode(dt, max_timesteps, camera_names, dataset_dir, dataset_na
                                               robot_name=f'master_left', init_node=True)
     master_bot_right = InterbotixManipulatorXS(robot_model="wx250s", group_name="arm", gripper_name="gripper",
                                                robot_name=f'master_right', init_node=False)
-    env = make_real_env(init_node=False, setup_robots=False)
+    env = make_real_env(camera_names=camera_names,
+                        init_node=False, setup_robots=False)
 
     # saving dataset
     if not os.path.isdir(dataset_dir):
@@ -129,7 +130,7 @@ def capture_one_episode(dt, max_timesteps, camera_names, dataset_dir, dataset_na
         - cam_right_wrist   (480, 640, 3) 'uint8'
     - qpos                  (14,)         'float64'
     - qvel                  (14,)         'float64'
-    
+
     action                  (14,)         'float64'
     base_action             (2,)          'float64'
     """
@@ -157,7 +158,7 @@ def capture_one_episode(dt, max_timesteps, camera_names, dataset_dir, dataset_na
         # data_dict['/base_action_t265'].append(ts.observation['base_vel_t265'])
         for cam_name in camera_names:
             data_dict[f'/observations/images/{cam_name}'].append(ts.observation['images'][cam_name])
-    
+
     # plot /base_action vs /base_action_t265
     # import matplotlib.pyplot as plt
     # plt.plot(np.array(data_dict['/base_action'])[:, 0], label='base_action_linear')

@@ -41,37 +41,37 @@ class RealEnv:
                                    "cam_right_wrist": (480x640x3)} # h, w, c, dtype='uint8'
     """
 
-    def __init__(self, init_node, setup_robots=True, setup_base=False):
+    def __init__(self, camera_names, init_node, setup_robots=True, setup_base=False):
         self.puppet_bot_left = InterbotixManipulatorXS(robot_model="vx300s", group_name="arm", gripper_name="gripper",
                                                        robot_name=f'puppet_left', init_node=init_node)
         self.puppet_bot_right = InterbotixManipulatorXS(robot_model="vx300s", group_name="arm", gripper_name="gripper",
                                                         robot_name=f'puppet_right', init_node=False)
         if setup_robots:
             self.setup_robots()
-        
+
         if setup_base:
             self.setup_base()
-        
+
         # self.setup_t265()
         self.setup_dxl()
 
         self.recorder_left = Recorder('left', init_node=False)
         self.recorder_right = Recorder('right', init_node=False)
-        self.image_recorder = ImageRecorder(init_node=False)
+        self.image_recorder = ImageRecorder(camera_names, init_node=False)
         self.gripper_command = JointSingleCommand(name="gripper")
-    
+
     def setup_t265(self):
         self.pipeline = rs.pipeline()
         cfg = rs.config()
         # if only pose stream is enabled, fps is higher (202 vs 30)
         cfg.enable_stream(rs.stream.pose)
         self.pipeline.start(cfg)
-    
+
     def setup_dxl(self):
         self.dxl_client = DynamixelClient([1, 2], port='/dev/ttyDXL_wheels', lazy_connect=True)
         self.wheel_r = 0.101 / 2  # 101 mm is the diameter
         self.base_r = 0.622  # 622 mm is the distance between the two wheels
-    
+
     def setup_base(self):
         self.tracer = pyagxrobots.pysdkugv.TracerBase()
         self.tracer.EnableCAN()
@@ -113,7 +113,7 @@ class RealEnv:
         frames = self.pipeline.wait_for_frames()
         pose_frame = frames.get_pose_frame()
         pose = pose_frame.get_pose_data()
-        
+
         q1 = Quaternion(w=pose.rotation.w, x=pose.rotation.x, y=pose.rotation.y, z=pose.rotation.z)
         rotation = -np.array(q1.yaw_pitch_roll)[0]
         rotation_vec = np.array([np.cos(rotation), np.sin(rotation)])
@@ -219,12 +219,13 @@ def get_action(master_bot_left, master_bot_right):
 
     return action
 
-# def get_base_action():
 
-
-
-def make_real_env(init_node, setup_robots=True, setup_base=False):
-    env = RealEnv(init_node, setup_robots, setup_base)
+def make_real_env(init_node,
+                  camera_names,
+                  setup_robots=True,
+                  setup_base=False):
+    env = RealEnv(init_node, setup_robots, setup_base,
+                  camera_names=camera_names)
     return env
 
 
@@ -251,7 +252,7 @@ def test_real_teleop():
     setup_master_bot(master_bot_right)
 
     # setup the environment
-    env = make_real_env(init_node=False)
+    env = make_real_env(camera_names=camera_names, init_node=False)
     ts = env.reset(fake=True)
     episode = [ts]
     # setup visualization

@@ -7,14 +7,14 @@ import IPython
 e = IPython.embed
 
 class ImageRecorder:
-    def __init__(self, init_node=True, is_debug=False):
+    def __init__(self, camera_names, init_node=True, is_debug=False):
         from collections import deque
         import rospy
         from cv_bridge import CvBridge
         from sensor_msgs.msg import Image
         self.is_debug = is_debug
         self.bridge = CvBridge()
-        self.camera_names = ['cam_high', 'cam_left_wrist', 'cam_right_wrist'] #['cam_high', 'cam_low', 'cam_left_wrist', 'cam_right_wrist']
+        self.camera_names = camera_names
         if init_node:
             rospy.init_node('image_recorder', anonymous=True)
         for cam_name in self.camera_names:
