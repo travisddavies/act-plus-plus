@@ -144,4 +144,5 @@ ckpts/
 
 *.png
 *.npy
-play.ipynb
+play.ipynbckpt
+.vimspector.json
