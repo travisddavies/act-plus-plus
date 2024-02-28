@@ -68,6 +68,8 @@ To set up a new terminal, run:
 
 ### Data Loading
 Tasks (i.e. a directory of episodes for a set task) should be saved in ``./data/<task_name>`` when in this current repo.
+Note that the format for the dataset_dir loaded for training is a list of directories. This means that in the ``task_name``
+that you set in ``constants.py`` can have its ``dataset_dir`` can be a list containing multiple tasks for training.
 
 ### Simulated experiments (LEGACY table-top ALOHA environments)
 
